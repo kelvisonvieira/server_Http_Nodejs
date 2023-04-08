@@ -1,18 +1,27 @@
 const http= require('http');
 const fs = require('fs');
+
 const port = 3000
 
 const server = http.createServer((req,res)=>{
+const urlInfo = require('url').parse(req.url,true)
+const name = urlInfo.query.name
  fs.readFile('./arquivo.html',(err, data)=>{
-    if(err){
-        res.writeHead(404);
-        res.write('arquivo não encontrado')
-     }
-    else{
+     
+    if(!name){
         res.writeHead(200,{'Content-Type':'text/html'})
-        res.write(data);
-     }
-    return res.end();    
+        res.write(data);}
+    else{
+        const newLine = name+ '\n'
+        fs.appendFile('arquivo.txt',newLine,function(err,data){
+            res.writeHead(302,{
+                Location: '/',
+
+            })
+            return res.end()
+        })
+      }    
+        return res.end();    
  })
 })
 
